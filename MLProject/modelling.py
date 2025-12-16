@@ -11,10 +11,6 @@ import sys
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     np.random.seed(40)
-    
-    # Set tracking URI to use parent's tracking
-    tracking_uri = os.environ.get('MLFLOW_TRACKING_URI', 'file:./mlruns')
-    mlflow.set_tracking_uri(tracking_uri)
 
     # Read the wine-quality csv file (make sure you're running this from the root of MLflow!)
     file_path = sys.argv[3] if len(sys.argv) > 3 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "train_pca.csv")
@@ -30,22 +26,18 @@ if __name__ == "__main__":
     input_example = X_train[0:5]
     n_estimators = int(sys.argv[1]) if len(sys.argv) > 1 else 505
     max_depth = int(sys.argv[2]) if len(sys.argv) > 2 else 37
-    
-    # Log parameters
-    mlflow.log_param("n_estimators", n_estimators)
-    mlflow.log_param("max_depth", max_depth)
-    
-    model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth)
-    model.fit(X_train, y_train)
+    with mlflow.start_run():
+        model = RandomForestClassifier(n_estimators=n_estimators, max_depth=max_depth)
+        model.fit(X_train, y_train)
 
-    predicted_qualities = model.predict(X_test)
+        predicted_qualities = model.predict(X_test)
 
-    mlflow.sklearn.log_model(
+        mlflow.sklearn.log_model(
         sk_model=model,
         artifact_path="model",
         input_example=input_example
-    )
-    
-    # Log metrics
-    accuracy = model.score(X_test, y_test)
-    mlflow.log_metric("accuracy", accuracy)
+        )
+        model.fit(X_train, y_train)
+        # Log metrics
+        accuracy = model.score(X_test, y_test)
+        mlflow.log_metric("accuracy", accuracy)
