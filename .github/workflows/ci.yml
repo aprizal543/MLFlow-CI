@@ -40,13 +40,13 @@ jobs:
       - name: Run training
         run: |
           cd MLProject
-          python modelling.py 
- 
+          python modelling.py
+      
       # Save models to GitHub Repository
       - name: Save mlruns to repo
         run: |
-          git config --global user.name ${{ secrets.username }}
-          git config --global user.email ${{ secrets.email }}
+          git config --global user.name "${{ secrets.username }}"
+          git config --global user.email "${{ secrets.email }}"
           git add mlruns/
-          git commit -m "Save mlruns from CI run"
+          git commit -m "Save mlruns from CI run" || echo "No changes to commit"
           git push origin main
