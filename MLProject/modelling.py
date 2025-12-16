@@ -11,6 +11,10 @@ import sys
 if __name__ == "__main__":
     warnings.filterwarnings("ignore")
     np.random.seed(40)
+    
+    # Set tracking URI to use parent's tracking
+    tracking_uri = os.environ.get('MLFLOW_TRACKING_URI', 'file:./mlruns')
+    mlflow.set_tracking_uri(tracking_uri)
 
     # Read the wine-quality csv file (make sure you're running this from the root of MLflow!)
     file_path = sys.argv[3] if len(sys.argv) > 3 else os.path.join(os.path.dirname(os.path.abspath(__file__)), "train_pca.csv")
